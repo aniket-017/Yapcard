@@ -1,0 +1,507 @@
+/* Palette matches src/theme.ts in the app. */
+:root {
+  --bg: #1b1535;
+  --panel: #2a2150;
+  --panel2: #3a2f6b;
+  --ink: #1b1535;
+  --text: #fff6e6;
+  --dim: #bdb4da;
+  --faint: #6f6699;
+  --white: #ffffff;
+  --mango: #ffb627;
+  --pink: #ff5fa2;
+  --mint: #3ee6b0;
+  --sky: #5cc8ff;
+  --lilac: #b79cff;
+  --coral: #ff7a59;
+  color-scheme: dark;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'Bricolage Grotesque', system-ui, sans-serif;
+  font-weight: 500;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+  overflow-x: hidden;
+}
+
+h1,
+h2,
+h3 {
+  font-weight: 800;
+  margin: 0;
+  letter-spacing: -0.035em;
+  line-height: 1.04;
+}
+
+p {
+  margin: 0;
+}
+
+a {
+  color: inherit;
+}
+
+.wrap {
+  width: 100%;
+  max-width: 1120px;
+  margin: 0 auto;
+  padding: 0 24px;
+}
+
+/* Nav */
+.nav {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-top: 22px;
+  padding-bottom: 22px;
+}
+
+.logo {
+  color: var(--mango);
+  font-weight: 800;
+  font-size: 26px;
+  letter-spacing: -0.04em;
+}
+
+.logo-small {
+  font-size: 20px;
+}
+
+.nav-link {
+  font-weight: 700;
+  text-decoration: none;
+  padding: 10px 18px;
+  border-radius: 14px;
+  border: 2px solid var(--faint);
+}
+
+.nav-link:hover {
+  border-color: var(--text);
+}
+
+/* Hero */
+.hero {
+  display: grid;
+  gap: 48px;
+  padding-top: 24px;
+  padding-bottom: 72px;
+  align-items: center;
+}
+
+.pill {
+  display: inline-block;
+  background: var(--panel2);
+  color: var(--mango);
+  font-weight: 700;
+  font-size: 14px;
+  padding: 6px 14px;
+  border-radius: 999px;
+}
+
+.hero h1 {
+  font-size: clamp(42px, 8vw, 72px);
+  margin-top: 18px;
+}
+
+.lead {
+  color: var(--dim);
+  font-size: clamp(17px, 2.2vw, 20px);
+  margin-top: 18px;
+  max-width: 520px;
+}
+
+.fine {
+  color: var(--faint);
+  font-size: 14px;
+  margin-top: 14px;
+}
+
+/* Store buttons */
+.stores {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-top: 28px;
+}
+
+.store-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  min-height: 60px;
+  padding: 10px 22px 10px 18px;
+  border-radius: 18px;
+  background: var(--text);
+  color: var(--ink);
+  text-decoration: none;
+  border-bottom: 5px solid #c9bfae;
+  transition: transform 0.15s ease;
+}
+
+a.store-btn:hover {
+  transform: translateY(-2px);
+}
+
+.store-btn-soon {
+  background: var(--panel);
+  color: var(--dim);
+  border-bottom-color: var(--panel2);
+  cursor: default;
+}
+
+.store-icon {
+  width: 26px;
+  height: 26px;
+  flex-shrink: 0;
+}
+
+.store-text {
+  display: flex;
+  flex-direction: column;
+  line-height: 1.1;
+}
+
+.store-small {
+  font-size: 12px;
+  font-weight: 700;
+  opacity: 0.8;
+}
+
+.store-big {
+  font-size: 20px;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+}
+
+/* Fanned example cards */
+.fan {
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  padding: 12px 0 40px;
+}
+
+.card-wrap {
+  container-type: inline-size;
+  width: clamp(120px, 30vw, 230px);
+  margin: 0 -16px;
+  position: relative;
+  transform: rotate(var(--rot, 0deg)) translateY(var(--lift, 0px));
+  transition: transform 0.25s ease;
+}
+
+.card-wrap:hover {
+  transform: rotate(var(--rot, 0deg)) translateY(calc(var(--lift, 0px) - 10px));
+}
+
+/* Sizes are the app's 340-wide card values divided by 3.4 (1cqw = 1% of card width). */
+.card {
+  aspect-ratio: 9 / 16;
+  background: var(--card-bg);
+  color: var(--card-fg);
+  border: 1.47cqw solid var(--white);
+  border-radius: 9.4cqw;
+  padding: 5.3cqw;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  box-shadow: 0 24px 48px rgba(0, 0, 0, 0.35);
+}
+
+.card-top {
+  display: flex;
+  justify-content: space-between;
+  font-weight: 700;
+  font-size: 3.7cqw;
+  opacity: 0.75;
+}
+
+.card-main {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.sticker {
+  width: 27cqw;
+  height: 27cqw;
+  border-radius: 50%;
+  background: var(--white);
+  display: grid;
+  place-items: center;
+  font-size: 15cqw;
+  transform: rotate(-8deg);
+  box-shadow: 0 1.2cqw 2.4cqw rgba(0, 0, 0, 0.18);
+}
+
+.card-name {
+  font-weight: 700;
+  font-size: 6.2cqw;
+  margin-top: 4cqw;
+}
+
+.card-title {
+  font-weight: 800;
+  font-size: 11.8cqw;
+  line-height: 1.03;
+  letter-spacing: -0.035em;
+  margin-top: 0.6cqw;
+}
+
+.card-strip {
+  align-self: flex-start;
+  background: var(--strip-bg);
+  color: var(--strip-fg);
+  font-weight: 700;
+  font-size: 4cqw;
+  padding: 1.8cqw 3cqw;
+  border-radius: 2.4cqw;
+  margin-top: 3.5cqw;
+  transform: rotate(-1.5deg);
+}
+
+.card-bubble {
+  background: var(--white);
+  color: var(--ink);
+  font-size: 5cqw;
+  line-height: 1.35;
+  padding: 4.1cqw 4.1cqw 2.6cqw;
+  border-radius: 5.9cqw 5.9cqw 5.9cqw 1.5cqw;
+  margin-top: 4.7cqw;
+}
+
+.ticks {
+  display: block;
+  text-align: right;
+  color: #3a9be8;
+  font-weight: 700;
+  font-size: 3.2cqw;
+  line-height: 1.2;
+}
+
+.card-tiles {
+  display: flex;
+  gap: 1.8cqw;
+  margin-bottom: 3.5cqw;
+}
+
+.card-tiles div {
+  flex: 1;
+  background: var(--tile-bg);
+  border-radius: 3.5cqw;
+  padding: 2.4cqw 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.card-tiles b {
+  font-weight: 800;
+  font-size: 5.6cqw;
+  letter-spacing: -0.03em;
+  line-height: 1.2;
+}
+
+.card-tiles span {
+  font-weight: 700;
+  font-size: 3.1cqw;
+  opacity: 0.75;
+}
+
+.card-wm {
+  text-align: center;
+  font-weight: 800;
+  font-size: 5.3cqw;
+  letter-spacing: -0.03em;
+}
+
+/* Sections */
+.section {
+  padding-top: 40px;
+  padding-bottom: 40px;
+}
+
+.section h2 {
+  font-size: clamp(30px, 5vw, 44px);
+}
+
+.panel {
+  background: var(--panel);
+  border-radius: 24px;
+  padding: 24px;
+}
+
+.panel h3 {
+  font-size: 21px;
+  letter-spacing: -0.02em;
+}
+
+.panel p {
+  color: var(--dim);
+  font-size: 16px;
+  margin-top: 8px;
+}
+
+.steps {
+  list-style: none;
+  padding: 0;
+  margin: 28px 0 0;
+  display: grid;
+  gap: 16px;
+}
+
+.step-num {
+  display: grid;
+  place-items: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: var(--panel2);
+  color: var(--mango);
+  font-weight: 800;
+  font-size: 18px;
+  margin-bottom: 16px;
+}
+
+.features {
+  display: grid;
+  gap: 16px;
+  margin-top: 28px;
+}
+
+.feature-icon {
+  display: grid;
+  place-items: center;
+  width: 52px;
+  height: 52px;
+  border-radius: 16px;
+  font-size: 26px;
+  margin-bottom: 16px;
+  transform: rotate(-6deg);
+}
+
+.privacy {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  background: var(--mint);
+  color: var(--ink);
+  border-radius: 28px;
+  padding: 32px 28px;
+}
+
+.privacy-icon {
+  display: grid;
+  place-items: center;
+  width: 64px;
+  height: 64px;
+  flex-shrink: 0;
+  border-radius: 50%;
+  background: var(--white);
+  font-size: 30px;
+  transform: rotate(-8deg);
+}
+
+.privacy p {
+  font-size: 17px;
+  margin-top: 10px;
+  max-width: 680px;
+}
+
+.cta {
+  background: var(--mango);
+  color: var(--ink);
+  border-radius: 28px;
+  padding: 44px 28px;
+  text-align: center;
+}
+
+.cta p {
+  font-size: 18px;
+  margin-top: 12px;
+}
+
+.cta .stores {
+  justify-content: center;
+}
+
+.cta .store-btn {
+  background: var(--ink);
+  color: var(--text);
+  border-bottom-color: #0d0a1c;
+}
+
+.cta .store-btn-soon {
+  background: rgba(27, 21, 53, 0.12);
+  color: var(--ink);
+  border-bottom-color: rgba(27, 21, 53, 0.2);
+}
+
+.footer {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  justify-content: space-between;
+  align-items: center;
+  color: var(--faint);
+  font-size: 14px;
+  padding-top: 32px;
+  padding-bottom: 40px;
+}
+
+@media (min-width: 720px) {
+  .steps {
+    grid-template-columns: repeat(3, 1fr);
+  }
+
+  .features {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .privacy {
+    flex-direction: row;
+    align-items: center;
+    padding: 40px;
+  }
+}
+
+@media (min-width: 960px) {
+  .hero {
+    grid-template-columns: 1.05fr 1fr;
+    padding-top: 48px;
+    padding-bottom: 96px;
+  }
+
+  .card-wrap {
+    width: clamp(150px, 15vw, 210px);
+  }
+
+  .features {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  .card-wrap,
+  .store-btn {
+    transition: none;
+  }
+}

@@ -29,15 +29,22 @@ jobs:
         with:
           node-version: 20
           cache: npm
+          cache-dependency-path: |
+            package-lock.json
+            web/package-lock.json
 
       - run: npm ci
       - run: npm run typecheck
       - run: npm test
       - name: Check server syntax
         run: node --check server/index.mjs
+      - name: Build landing page
+        run: |
+          npm ci --prefix web
+          npm run build --prefix web
 
   deploy:
-    name: Deploy backend to VPS
+    name: Deploy backend and landing page to VPS
     needs: test
     if: github.ref == 'refs/heads/main' && (github.event_name == 'push' || github.event_name == 'workflow_dispatch')
     runs-on: ubuntu-latest
@@ -46,6 +53,17 @@ jobs:
       cancel-in-progress: false
     steps:
       - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+          cache-dependency-path: web/package-lock.json
+
+      - name: Build landing page into server/public
+        run: |
+          npm ci --prefix web
+          npm run build --prefix web
 
       - name: Set up SSH key
         env:
@@ -103,4 +121,10 @@ jobs:
           echo "Backend did not answer on port $APP_PORT"
           pm2 logs "$APP_NAME" --lines 40 --nostream || true
           exit 1
+          EOF
+
+      - name: Landing page check
+        run: |
+          ssh deploy "APP_PORT=$APP_PORT bash -s" <<'EOF'
+          node -e "fetch('http://127.0.0.1:' + process.env.APP_PORT + '/').then(async r => { const t = await r.text(); const ok = r.ok && (r.headers.get('content-type') || '').startsWith('text/html') && t.includes('id=\"root\"'); console.log(ok ? 'Landing page OK' : 'Landing page missing: ' + r.status); process.exit(ok ? 0 : 1) }).catch(e => { console.error(e); process.exit(1) })"
           EOF

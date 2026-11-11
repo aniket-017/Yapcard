@@ -35,13 +35,13 @@ Without a server the app uses its built-in roast lines and nothing leaves the ph
 ```bash
 cd server
 copy .env.example .env      # then put your GEMINI_API_KEY in .env
-npm run dev                 # starts on http://localhost:8787
+npm run dev                 # starts on http://localhost:1749
 ```
 
 Then in the project root create `.env` with your laptop's Wi-Fi address (phone and laptop on the same Wi-Fi):
 
 ```
-EXPO_PUBLIC_API_URL=http://192.168.x.x:8787
+EXPO_PUBLIC_API_URL=http://192.168.x.x:1749
 ```
 
 Restart `npx expo start`. An **AI-written roasts** switch appears on the setup screen.
@@ -49,6 +49,21 @@ Restart `npx expo start`. An **AI-written roasts** switch appears on the setup s
 What is sent: the stats and about 120 sample messages, with names replaced by P1, P2…, and phone numbers, emails and links removed. Names are put back on the phone. The server stores nothing.
 
 To host the server, deploy the `server` folder to any Node 20+ host (Render, Railway, a VPS), set `GEMINI_API_KEY` there, and put its https address in `EXPO_PUBLIC_API_URL` before building the app.
+
+## Landing page
+
+The website (info plus Play Store and App Store buttons) is a small React app in `web/`. The roast server serves its build on the same port, so the page and `/api/roast` share one address.
+
+```bash
+cd web
+npm install
+npm run dev        # http://localhost:5173, proxies /api and /health to the server on :1749
+npm run build      # writes the site to server/public
+```
+
+After a build, `cd server && npm run dev` serves the page at http://localhost:1749/. Put the store links in `web/src/config.ts`; while a link is empty its button shows "Coming soon".
+
+Pushing to `main` runs `.github/workflows/ci-cd.yml`, which builds the page and deploys it with the server to the VPS (port 1749).
 
 ## Build installable apps
 
@@ -77,6 +92,7 @@ src/lib/awards.ts        the 18 titles, who gets which, built-in roasts
 src/lib/ai.ts            anonymises and calls the roast server
 src/screens/             Home, Setup, Story, Cards
 src/components/          cards, poster, buttons
-server/index.mjs         Gemini roast endpoint (no dependencies)
+server/index.mjs         Gemini roast endpoint and landing page host (no dependencies)
+web/                     landing page (Vite + React), builds into server/public
 tests/parse.test.ts      npm test
 ```

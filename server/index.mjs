@@ -2,9 +2,13 @@
 //   POST /api/roast  { level, group, members[], sample[] }  ->  { members:[{id, roast}], vibe:{name, line, emoji} }
 // The app sends stats and a short sample with names already replaced by P1, P2…
 // Nothing is written to disk and request bodies are never logged.
+// Also serves the landing page built from web/ into ./public (cd web && npm run build).
 import http from 'node:http';
+import { readFile, stat } from 'node:fs/promises';
+import nodePath from 'node:path';
+import { fileURLToPath } from 'node:url';
 
-const PORT = Number(process.env.PORT || 8787);
+const PORT = Number(process.env.PORT || 1749);
 const KEY = process.env.GEMINI_API_KEY || '';
 const MODEL = process.env.GEMINI_MODEL || 'gemini-3.1-flash-lite';
 const BASE = (process.env.GEMINI_BASE_URL || 'https://generativelanguage.googleapis.com').replace(/\/+$/, '');
@@ -120,10 +124,74 @@ function send(res, status, obj) {
   res.end(JSON.stringify(obj));
 }
 
+const PUBLIC_DIR = nodePath.resolve(fileURLToPath(new URL('./public/', import.meta.url)));
+const TYPES = {
+  '.html': 'text/html; charset=utf-8',
+  '.js': 'text/javascript; charset=utf-8',
+  '.css': 'text/css; charset=utf-8',
+  '.json': 'application/json; charset=utf-8',
+  '.txt': 'text/plain; charset=utf-8',
+  '.png': 'image/png',
+  '.jpg': 'image/jpeg',
+  '.svg': 'image/svg+xml',
+  '.ico': 'image/x-icon',
+  '.webp': 'image/webp',
+  '.woff': 'font/woff',
+  '.woff2': 'font/woff2',
+};
+
+async function findFile(urlPath) {
+  let rel;
+  try {
+    rel = decodeURIComponent(urlPath);
+  } catch {
+    return null;
+  }
+  const file = nodePath.resolve(PUBLIC_DIR, '.' + rel);
+  if (file !== PUBLIC_DIR && !file.startsWith(PUBLIC_DIR + nodePath.sep)) return null;
+  try {
+    const st = await stat(file);
+    if (st.isFile()) return file;
+    if (st.isDirectory()) {
+      const index = nodePath.join(file, 'index.html');
+      if ((await stat(index)).isFile()) return index;
+    }
+  } catch {
+    // not found
+  }
+  return null;
+}
+
+/** Serves a built file, or index.html for extension-less paths so client-side routes work. Returns false if there is nothing to serve. */
+async function serveStatic(req, res, urlPath) {
+  let file = await findFile(urlPath);
+  if (!file && !nodePath.extname(urlPath)) file = await findFile('/index.html');
+  if (!file) return false;
+  const body = await readFile(file);
+  const ext = nodePath.extname(file).toLowerCase();
+  const cache = urlPath.startsWith('/assets/')
+    ? 'public, max-age=31536000, immutable'
+    : ext === '.html' ? 'no-cache' : 'public, max-age=3600';
+  res.writeHead(200, { 'Content-Type': TYPES[ext] || 'application/octet-stream', 'Content-Length': body.length, 'Cache-Control': cache });
+  res.end(req.method === 'HEAD' ? undefined : body);
+  return true;
+}
+
+const health = () => ({ ok: true, model: MODEL, key: KEY ? 'set' : 'missing' });
+
 const server = http.createServer(async (req, res) => {
   const path = (req.url || '').split('?')[0];
   if (req.method === 'OPTIONS') return send(res, 204, {});
-  if (req.method === 'GET' && (path === '/' || path === '/health')) return send(res, 200, { ok: true, model: MODEL, key: KEY ? 'set' : 'missing' });
+  if (req.method === 'GET' && path === '/health') return send(res, 200, health());
+  if ((req.method === 'GET' || req.method === 'HEAD') && !path.startsWith('/api/')) {
+    try {
+      if (await serveStatic(req, res, path)) return;
+    } catch (e) {
+      console.error('[static]', e?.message || e);
+    }
+    if (path === '/') return send(res, 200, health());
+    return send(res, 404, { error: 'Not found' });
+  }
   if (req.method !== 'POST' || path !== '/api/roast') return send(res, 404, { error: 'Not found' });
   if (!KEY) return send(res, 503, { error: 'GEMINI_API_KEY is not set on the server' });
 
