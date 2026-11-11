@@ -1,0 +1,34 @@
+APP NAME
+Yapcard
+
+SHORT DESCRIPTION
+Turn your group chat into a recap. Everyone gets a title, a roast and a card.
+
+FULL DESCRIPTION
+Who talks the most in your group chat? Who disappears for weeks? Who texts at 2 a.m.? Yapcard reads your chat export and turns it into a recap your friends will actually want to share.
+
+How it works
+1. Export a chat from WhatsApp (Without media), or a Telegram chat as JSON.
+2. Open it in Yapcard.
+3. Tap through your recap, then reveal everyone's card.
+
+What you get
+• A story-style recap: total messages, your busiest hour, your loudest day, longest streak, top emojis and the words you can't stop saying.
+• Guess-who questions before each reveal, so the whole group can play along.
+• A title card for every member, like The Chief Yapper, The Ghost, The 2 a.m. Menace, The Essay Writer or The Instant Replier, each with a stat and a roast line.
+• The power duo: the two people who reply to each other the fastest.
+• Your group's personality, in one line.
+• A group poster with everyone's title on one image.
+
+Made to share
+Every slide and card saves as a 9:16 image, sized for Instagram Stories and WhatsApp Status. Share yours, send the poster back to the group, and see who complains first.
+
+Pick the roast level
+Choose Friendly, Spicy or Savage, and switch any time. Roasts are about texting habits only: how much, how fast and how late you text.
+
+Private by design
+Your chat is read on your phone. The chat file is never uploaded or stored. If you turn on AI-written roasts, the app sends only the stats and a short sample of messages to write them, with names, phone numbers, emails and links removed first. Turn it off and nothing leaves your phone.
+
+Works with group chats and one-to-one chats in any language.
+
+Yapcard is an independent app and is not affiliated with, endorsed by or connected to WhatsApp, Meta or Telegram.
