@@ -1,6 +1,7 @@
 import type { CSSProperties } from 'react';
 import { APP_STORE_URL, PLAY_STORE_URL } from './config';
 import { ExampleCard, type Example } from './components/ExampleCard';
+import { SiteFooter } from './components/SiteFooter';
 import { StoreButton } from './components/StoreButton';
 
 const EXAMPLES: Example[] = [
@@ -48,7 +49,7 @@ export function App() {
             <h1>Find out who your group chat really is.</h1>
             <p className="lead">Import a WhatsApp or Telegram chat. Everyone gets a title, a roast and a card to post.</p>
             <StoreButtons />
-            <p className="fine">Free on Android and iPhone. Your chat never leaves your phone.</p>
+            <p className="fine">Free on Android and iPhone. Your chat file never leaves your phone.</p>
           </div>
           <div className="fan" aria-label="Example cards: The 2 a.m. Menace, The Chief Yapper, The Ghost">
             {EXAMPLES.map((c, i) => (
@@ -88,7 +89,7 @@ export function App() {
             <span className="privacy-icon" aria-hidden="true">🔒</span>
             <div>
               <h2>Your chat stays on your phone</h2>
-              <p>Yapcard reads the export on your device. The file is never uploaded or stored. If you switch on AI roasts, only stats and a short sample are sent, with names, numbers and links removed first.</p>
+              <p>Yapcard reads the export on your device. The file is never uploaded or stored. If you switch on AI roasts, only stats and a short sample are sent, with names, numbers and links removed first. <a href="/privacy">Read the privacy policy</a>.</p>
             </div>
           </div>
         </section>
@@ -102,10 +103,7 @@ export function App() {
         </section>
       </main>
 
-      <footer className="footer wrap">
-        <span className="logo logo-small">yapcard</span>
-        <span>© {new Date().getFullYear()} Yapcard. Not affiliated with WhatsApp or Telegram.</span>
-      </footer>
+      <SiteFooter />
     </>
   );
 }

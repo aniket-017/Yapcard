@@ -463,6 +463,128 @@ a.store-btn:hover {
   padding-bottom: 40px;
 }
 
+.footer .logo {
+  text-decoration: none;
+}
+
+.footer-links {
+  display: flex;
+  gap: 18px;
+}
+
+.footer-links a {
+  color: var(--dim);
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.footer-links a:hover {
+  color: var(--text);
+}
+
+a.logo {
+  text-decoration: none;
+}
+
+/* Privacy, terms and support pages */
+.doc {
+  max-width: 780px;
+  padding-top: 24px;
+  padding-bottom: 48px;
+}
+
+.doc h1 {
+  font-size: clamp(38px, 7vw, 60px);
+}
+
+.doc-date {
+  color: var(--faint);
+  font-size: 14px;
+  margin-top: 12px;
+}
+
+.doc-intro {
+  color: var(--dim);
+  font-size: 18px;
+  margin-top: 20px;
+}
+
+.doc a {
+  color: var(--mango);
+}
+
+.doc-summary {
+  background: var(--mint);
+  color: var(--ink);
+  border-radius: 24px;
+  padding: 24px 26px;
+  margin-top: 32px;
+}
+
+.doc-summary h2 {
+  font-size: 22px;
+}
+
+.doc-summary a {
+  color: var(--ink);
+  font-weight: 700;
+}
+
+.doc-summary p,
+.doc-summary ul {
+  margin-top: 10px;
+}
+
+.doc-section {
+  margin-top: 40px;
+}
+
+.doc-section h2 {
+  font-size: 24px;
+  letter-spacing: -0.02em;
+}
+
+.doc-section p,
+.doc-section ul {
+  color: var(--dim);
+  font-size: 16.5px;
+  line-height: 1.65;
+  margin-top: 12px;
+}
+
+.doc-section b {
+  color: var(--text);
+}
+
+.doc ul {
+  padding-left: 22px;
+}
+
+.doc li + li {
+  margin-top: 6px;
+}
+
+.faq {
+  display: grid;
+  gap: 12px;
+  margin-top: 16px;
+}
+
+.faq-item {
+  padding: 18px 22px;
+}
+
+.faq-item summary {
+  cursor: pointer;
+  font-weight: 700;
+  font-size: 17px;
+  color: var(--text);
+}
+
+.faq-item p {
+  margin-top: 10px;
+}
+
 @media (min-width: 720px) {
   .steps {
     grid-template-columns: repeat(3, 1fr);

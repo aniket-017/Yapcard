@@ -63,6 +63,8 @@ npm run build      # writes the site to server/public
 
 After a build, `cd server && npm run dev` serves the page at http://localhost:1749/. Put the store links in `web/src/config.ts`; while a link is empty its button shows "Coming soon".
 
+The site also has the pages the stores ask for: `/privacy` (privacy policy URL), `/terms` and `/support` (App Store support URL). The app's home screen links to all three. The contact email and developer name on those pages are set in `web/src/config.ts`.
+
 Pushing to `main` runs `.github/workflows/ci-cd.yml`, which builds the page and deploys it with the server to the VPS (port 1749).
 
 ## Build installable apps

@@ -61,6 +61,29 @@
           }
         }
       ]
-    ]
+    ],
+    "extra": {
+      "eas": {
+        "build": {
+          "experimental": {
+            "ios": {
+              "appExtensions": [
+                {
+                  "targetName": "expo-sharing-extension",
+                  "bundleIdentifier": "com.yapcard.app.expo-sharing-extension",
+                  "entitlements": {
+                    "com.apple.security.application-groups": [
+                      "group.com.yapcard.app"
+                    ]
+                  }
+                }
+              ]
+            }
+          }
+        },
+        "projectId": "41f8a7f2-ba26-4b69-bd21-1ef73a339473"
+      }
+    },
+    "owner": "jue17"
   }
 }

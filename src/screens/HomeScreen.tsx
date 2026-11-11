@@ -1,10 +1,12 @@
 import React from 'react';
-import { ActivityIndicator, Platform, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { ActivityIndicator, Linking, Platform, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import type { MemberCardData, MemberStats } from '../types';
 import { MemberCard } from '../components/MemberCard';
 import { Button } from '../components/ui';
-import { colors, font } from '../theme';
+import { colors, font, SHARE_LINK } from '../theme';
+
+const LINKS = [['Privacy', '/privacy'], ['Terms', '/terms'], ['Support', '/support']] as const;
 
 const STEPS_ANDROID = ['Open the group in WhatsApp', 'Tap ⋮, then More, then Export chat', 'Choose “Without media”', 'Pick Yapcard, or save the file and import it here'];
 const STEPS_IOS = ['Open the group in WhatsApp', 'Tap the group name, then Export Chat', 'Choose “Without Media”', 'Pick Yapcard, or “Save to Files” and import it here'];
@@ -77,6 +79,14 @@ export function HomeScreen({
       </View>
 
       <Text style={s.privacy}>Your chat is read on this phone. The file is never uploaded or stored.</Text>
+
+      <View style={s.links}>
+        {LINKS.map(([label, path]) => (
+          <Pressable key={path} onPress={() => Linking.openURL(`https://${SHARE_LINK}${path}`)} accessibilityRole="link" hitSlop={10}>
+            <Text style={s.link}>{label}</Text>
+          </Pressable>
+        ))}
+      </View>
     </ScrollView>
   );
 }
@@ -98,4 +108,6 @@ const s = StyleSheet.create({
   stepText: { color: colors.text, fontFamily: font.body, fontSize: 15.5, flex: 1, lineHeight: 21 },
   note: { color: colors.dim, fontFamily: font.body, fontSize: 13.5, lineHeight: 19, marginTop: 2 },
   privacy: { color: colors.dim, fontFamily: font.body, fontSize: 14, textAlign: 'center', lineHeight: 20 },
+  links: { flexDirection: 'row', justifyContent: 'center', gap: 22, marginTop: -12 },
+  link: { color: colors.dim, fontFamily: font.bold, fontSize: 14, textDecorationLine: 'underline' },
 });
