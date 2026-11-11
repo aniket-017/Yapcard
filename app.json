@@ -1,0 +1,66 @@
+{
+  "expo": {
+    "name": "Yapcard",
+    "slug": "yapcard",
+    "scheme": "yapcard",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/icon.png",
+    "userInterfaceStyle": "dark",
+    "backgroundColor": "#1B1535",
+    "ios": {
+      "supportsTablet": false,
+      "bundleIdentifier": "com.yapcard.app",
+      "infoPlist": {
+        "ITSAppUsesNonExemptEncryption": false
+      }
+    },
+    "android": {
+      "package": "com.yapcard.app",
+      "adaptiveIcon": {
+        "backgroundColor": "#1B1535",
+        "foregroundImage": "./assets/android-icon-foreground.png",
+        "monochromeImage": "./assets/android-icon-monochrome.png"
+      },
+      "predictiveBackGestureEnabled": false
+    },
+    "web": {
+      "favicon": "./assets/favicon.png"
+    },
+    "plugins": [
+      [
+        "expo-splash-screen",
+        {
+          "image": "./assets/splash-icon.png",
+          "imageWidth": 180,
+          "resizeMode": "contain",
+          "backgroundColor": "#1B1535"
+        }
+      ],
+      [
+        "expo-sharing",
+        {
+          "android": {
+            "enabled": true,
+            "singleShareMimeTypes": [
+              "text/*",
+              "application/zip",
+              "application/json",
+              "application/octet-stream"
+            ],
+            "multipleShareMimeTypes": [
+              "*/*"
+            ]
+          },
+          "ios": {
+            "enabled": true,
+            "activationRule": {
+              "supportsFileWithMaxCount": 1,
+              "supportsAttachmentsWithMaxCount": 1
+            }
+          }
+        }
+      ]
+    ]
+  }
+}

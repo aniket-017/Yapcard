@@ -1,0 +1,11 @@
+{
+  "name": "yapcard-server",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "engines": { "node": ">=20" },
+  "scripts": {
+    "start": "node index.mjs",
+    "dev": "node --env-file=.env index.mjs"
+  }
+}
