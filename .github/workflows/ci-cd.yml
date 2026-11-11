@@ -1,0 +1,106 @@
+name: CI/CD
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  DEPLOY_HOST: 154.53.42.27
+  DEPLOY_USER: admin
+  APP_NAME: yapcard
+  APP_DIR: Yapcard
+  APP_PORT: 1749
+
+jobs:
+  test:
+    name: Typecheck and test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - run: npm ci
+      - run: npm run typecheck
+      - run: npm test
+      - name: Check server syntax
+        run: node --check server/index.mjs
+
+  deploy:
+    name: Deploy backend to VPS
+    needs: test
+    if: github.ref == 'refs/heads/main' && (github.event_name == 'push' || github.event_name == 'workflow_dispatch')
+    runs-on: ubuntu-latest
+    concurrency:
+      group: deploy-backend
+      cancel-in-progress: false
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up SSH key
+        env:
+          SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
+        run: |
+          mkdir -p ~/.ssh
+          printf '%s\n' "$SSH_PRIVATE_KEY" > ~/.ssh/id_deploy
+          chmod 600 ~/.ssh/id_deploy
+          ssh-keyscan -H "$DEPLOY_HOST" >> ~/.ssh/known_hosts
+          printf 'Host deploy\n  HostName %s\n  User %s\n  IdentityFile ~/.ssh/id_deploy\n  IdentitiesOnly yes\n' \
+            "$DEPLOY_HOST" "$DEPLOY_USER" > ~/.ssh/config
+
+      - name: Upload server files
+        run: |
+          ssh deploy "mkdir -p ~/$APP_DIR"
+          rsync -az --delete --exclude '.env' --exclude 'node_modules' server/ "deploy:~/$APP_DIR/"
+
+      - name: Write server .env
+        env:
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+          GEMINI_MODEL: ${{ vars.GEMINI_MODEL || 'gemini-3.1-flash-lite' }}
+          RATE_LIMIT_PER_HOUR: ${{ vars.RATE_LIMIT_PER_HOUR || '30' }}
+        run: |
+          if [ -n "$GEMINI_API_KEY" ]; then
+            printf 'GEMINI_API_KEY=%s\nGEMINI_MODEL=%s\nPORT=%s\nRATE_LIMIT_PER_HOUR=%s\n' \
+              "$GEMINI_API_KEY" "$GEMINI_MODEL" "$APP_PORT" "$RATE_LIMIT_PER_HOUR" \
+              | ssh deploy "umask 077 && cat > ~/$APP_DIR/.env"
+          else
+            echo "GEMINI_API_KEY secret not set; keeping the existing .env on the server and only pinning PORT."
+            ssh deploy "cd ~/$APP_DIR && touch .env && chmod 600 .env && sed -i '/^PORT=/d' .env && echo PORT=$APP_PORT >> .env"
+          fi
+
+      - name: Start or restart with pm2
+        run: |
+          ssh deploy "APP_NAME=$APP_NAME APP_DIR=$APP_DIR bash -s" <<'EOF'
+          set -e
+          cd ~/"$APP_DIR"
+          if pm2 describe "$APP_NAME" > /dev/null 2>&1; then
+            pm2 restart "$APP_NAME" --update-env
+          else
+            pm2 start index.mjs --name "$APP_NAME" --cwd "$PWD" --node-args="--env-file=$PWD/.env"
+          fi
+          pm2 save
+          EOF
+
+      - name: Health check
+        run: |
+          ssh deploy "APP_PORT=$APP_PORT APP_NAME=$APP_NAME bash -s" <<'EOF'
+          for i in $(seq 1 10); do
+            if node -e "fetch('http://127.0.0.1:' + process.env.APP_PORT + '/health').then(r => r.text()).then(t => { console.log(t); process.exit(0) }).catch(() => process.exit(1))"; then
+              exit 0
+            fi
+            sleep 2
+          done
+          echo "Backend did not answer on port $APP_PORT"
+          pm2 logs "$APP_NAME" --lines 40 --nostream || true
+          exit 1
+          EOF
