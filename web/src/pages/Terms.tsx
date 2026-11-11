@@ -26,6 +26,10 @@ export function Terms() {
           Only import chats you are a member of. You are responsible for the cards and recaps you share and where you share them. Don't use
           Yapcard to bully, harass, embarrass or expose anyone, or to share private information about people who haven't agreed to it.
         </p>
+        <p>
+          If you switch on "Save a copy on our server", you confirm you are a member of that chat and comfortable sharing its contents with us.
+          How we store and delete saved files is described in the <a href="/privacy">Privacy Policy</a>.
+        </p>
       </Section>
 
       <Section title="3. Roasts are jokes">

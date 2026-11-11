@@ -1,10 +1,14 @@
-// Yapcard roast server: one endpoint, no dependencies. Needs Node 20+.
-//   POST /api/roast  { level, group, members[], sample[] }  ->  { members:[{id, roast}], vibe:{name, line, emoji} }
-// The app sends stats and a short sample with names already replaced by P1, P2…
-// Nothing is written to disk and request bodies are never logged.
+// Yapcard roast server: no dependencies. Needs Node 20+.
+//   POST /api/roast   { level, group, members[], sample[] }  ->  { members:[{id, roast}], vibe:{name, line, emoji} }
+//   POST /api/upload  raw chat export bytes, X-File-Name header  ->  { ok: true }
+// The roast request carries stats and a short sample with names already replaced by P1, P2… and is never stored.
+// /api/upload is only called when the user switches on "Save a copy on our server". It writes the file to
+// UPLOAD_DIR/<date>/ with owner-only permissions; files are deleted by hand after 30 days (see README).
+// Request bodies and file names are never logged.
 // Also serves the landing page built from web/ into ./public (cd web && npm run build).
 import http from 'node:http';
-import { readFile, stat } from 'node:fs/promises';
+import { randomBytes } from 'node:crypto';
+import { mkdir, readFile, stat, writeFile } from 'node:fs/promises';
 import nodePath from 'node:path';
 import { fileURLToPath } from 'node:url';
 
@@ -15,6 +19,8 @@ const BASE = (process.env.GEMINI_BASE_URL || 'https://generativelanguage.googlea
 const ORIGIN = process.env.ALLOWED_ORIGIN || '*';
 const PER_HOUR = Number(process.env.RATE_LIMIT_PER_HOUR || 30);
 const MAX_BODY = 200 * 1024;
+const UPLOAD_DIR = nodePath.resolve(process.env.UPLOAD_DIR || fileURLToPath(new URL('./uploads/', import.meta.url)));
+const MAX_UPLOAD = Number(process.env.MAX_UPLOAD_MB || 25) * 1024 * 1024;
 
 const LEVELS = {
   friendly: 'Warm and affectionate teasing. Every line should make the person smile. No real burns.',
@@ -39,17 +45,43 @@ Rules:
 Return JSON only: {"members":[{"id":"P1","roast":"..."}],"vibe":{"name":"...","line":"...","emoji":"..."}}`;
 
 const hits = new Map(); // ip -> timestamps
-function limited(ip) {
+const uploadHits = new Map();
+function limited(ip, store = hits) {
   const now = Date.now();
-  const list = (hits.get(ip) || []).filter((t) => now - t < 3600_000);
+  const list = (store.get(ip) || []).filter((t) => now - t < 3600_000);
   if (list.length >= PER_HOUR) {
-    hits.set(ip, list);
+    store.set(ip, list);
     return true;
   }
   list.push(now);
-  hits.set(ip, list);
-  if (hits.size > 50_000) hits.clear();
+  store.set(ip, list);
+  if (store.size > 50_000) store.clear();
   return false;
+}
+
+/** Reads the whole request body, or returns null once it passes `max` bytes. */
+async function readBody(req, max) {
+  let size = 0;
+  const chunks = [];
+  for await (const c of req) {
+    size += c.length;
+    if (size > max) return null;
+    chunks.push(c);
+  }
+  return Buffer.concat(chunks);
+}
+
+/** Saves an opted-in chat export under a random name. The client's file name only decides the extension. */
+async function saveUpload(body, clientName) {
+  const isZip = body.length > 3 && body[0] === 0x50 && body[1] === 0x4b;
+  const ext = isZip ? '.zip' : /\.json$/i.test(clientName) ? '.json' : /\.txt$/i.test(clientName) ? '.txt' : null;
+  if (!ext) return false;
+  const now = new Date();
+  const dir = nodePath.join(UPLOAD_DIR, now.toISOString().slice(0, 10));
+  await mkdir(dir, { recursive: true, mode: 0o700 });
+  const file = nodePath.join(dir, `${now.getTime()}-${randomBytes(8).toString('hex')}${ext}`);
+  await writeFile(file, body, { mode: 0o600, flag: 'wx' });
+  return true;
 }
 
 const str = (v, max) => (typeof v === 'string' ? v.slice(0, max) : '');
@@ -117,7 +149,7 @@ function send(res, status, obj) {
   res.writeHead(status, {
     'Content-Type': 'application/json; charset=utf-8',
     'Access-Control-Allow-Origin': ORIGIN,
-    'Access-Control-Allow-Headers': 'Content-Type',
+    'Access-Control-Allow-Headers': 'Content-Type, X-File-Name',
     'Access-Control-Allow-Methods': 'POST, OPTIONS',
     'Cache-Control': 'no-store',
   });
@@ -192,23 +224,38 @@ const server = http.createServer(async (req, res) => {
     if (path === '/') return send(res, 200, health());
     return send(res, 404, { error: 'Not found' });
   }
+  const ip = String(req.headers['x-forwarded-for'] || req.socket.remoteAddress || '').split(',')[0].trim();
+
+  if (req.method === 'POST' && path === '/api/upload') {
+    if (limited(ip, uploadHits)) return send(res, 429, { error: 'Too many uploads from this network. Try again in an hour.' });
+    try {
+      const body = await readBody(req, MAX_UPLOAD);
+      if (!body) return send(res, 413, { error: 'File too large' });
+      if (!body.length) return send(res, 400, { error: 'Bad request' });
+      let name = '';
+      try {
+        name = decodeURIComponent(String(req.headers['x-file-name'] || ''));
+      } catch {
+        // falls through to the type check below
+      }
+      if (!(await saveUpload(body, name))) return send(res, 415, { error: 'Only .txt, .json or .zip chat exports' });
+      return send(res, 200, { ok: true });
+    } catch (e) {
+      console.error('[upload]', e?.code || e?.message || e); // never the file or its name
+      return send(res, 500, { error: 'Could not save the file' });
+    }
+  }
+
   if (req.method !== 'POST' || path !== '/api/roast') return send(res, 404, { error: 'Not found' });
   if (!KEY) return send(res, 503, { error: 'GEMINI_API_KEY is not set on the server' });
-
-  const ip = String(req.headers['x-forwarded-for'] || req.socket.remoteAddress || '').split(',')[0].trim();
   if (limited(ip)) return send(res, 429, { error: 'Too many recaps from this network. Try again in an hour.' });
 
-  let size = 0;
-  const chunks = [];
   try {
-    for await (const c of req) {
-      size += c.length;
-      if (size > MAX_BODY) return send(res, 413, { error: 'Request too large' });
-      chunks.push(c);
-    }
+    const body = await readBody(req, MAX_BODY);
+    if (!body) return send(res, 413, { error: 'Request too large' });
     let parsed = null;
     try {
-      parsed = JSON.parse(Buffer.concat(chunks).toString('utf8'));
+      parsed = JSON.parse(body.toString('utf8'));
     } catch {
       // handled below as a bad request
     }

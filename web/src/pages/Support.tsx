@@ -35,8 +35,10 @@ const FAQ: { q: string; a: ReactNode }[] = [
     q: 'Is my chat uploaded?',
     a: (
       <>
-        No. The file is read on your phone and never sent to us. If AI roasts are switched on, only stats and a short sample with names, numbers
-        and links removed are sent, and nothing is stored. See the <a href="/privacy">Privacy Policy</a> for details.
+        Not unless you choose to. The file is read on your phone. It is only sent to us if you switch on "Save a copy on our server" on the
+        setup screen, which is off by default; saved files are deleted within 30 days. If AI roasts are switched on, only stats and a short
+        sample with names, numbers and links removed are sent, and that is not stored. See the <a href="/privacy">Privacy Policy</a> for
+        details.
       </>
     ),
   },
@@ -44,8 +46,9 @@ const FAQ: { q: string; a: ReactNode }[] = [
     q: 'How do I delete my data?',
     a: (
       <>
-        Yapcard has no accounts and keeps nothing on our servers, so there is nothing to delete with us. Close or uninstall the app to clear it from
-        your phone. <a href="/privacy#delete">More about data deletion</a>.
+        If you saved a copy of a chat on our server, it is deleted automatically within 30 days; email {CONTACT_EMAIL} with the date and
+        approximate time you saved it to have it deleted sooner. Otherwise we keep nothing. Close or uninstall the app to clear it from your
+        phone. <a href="/privacy#delete">More about data deletion</a>.
       </>
     ),
   },

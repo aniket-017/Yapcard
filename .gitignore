@@ -43,6 +43,9 @@ yarn-error.*
 # landing page build (made by `cd web && npm run build`)
 server/public/
 
+# chat exports users chose to save on the server
+server/uploads/
+
 # secrets
 .env
 server/.env

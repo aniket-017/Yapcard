@@ -13,7 +13,7 @@ export const LEVELS: { value: RoastLevel; label: string }[] = [
 ];
 
 export function SetupScreen({
-  chat, periods, periodIdx, onPeriod, level, onLevel, aiPossible, useAi, onUseAi, onStart, onBack, working,
+  chat, periods, periodIdx, onPeriod, level, onLevel, aiPossible, useAi, onUseAi, canSave, saveCopy, onSaveCopy, saving, onStart, onBack, working,
 }: {
   chat: ParsedChat;
   periods: Period[];
@@ -24,6 +24,10 @@ export function SetupScreen({
   aiPossible: boolean;
   useAi: boolean;
   onUseAi: (v: boolean) => void;
+  canSave: boolean;
+  saveCopy: boolean;
+  onSaveCopy: (v: boolean) => void;
+  saving: boolean;
   onStart: () => void;
   onBack: () => void;
   working: boolean;
@@ -65,11 +69,23 @@ export function SetupScreen({
         </View>
       )}
 
+      {canSave && (
+        <View style={[s.block, s.aiRow]}>
+          <View style={{ flex: 1 }}>
+            <Text style={s.label}>Save a copy on our server</Text>
+            <Text style={s.hint}>
+              Uploads the full chat file, including names and phone numbers. Kept for up to 30 days, then deleted. Off by default.
+            </Text>
+          </View>
+          <Switch value={saveCopy} onValueChange={onSaveCopy} disabled={working} trackColor={{ true: colors.mint, false: colors.panel2 }} thumbColor="#fff" />
+        </View>
+      )}
+
       <View style={{ gap: 12 }}>
         {working ? (
           <View style={s.working}>
             <ActivityIndicator color={colors.mango} />
-            <Text style={s.workingText}>{useAi && aiPossible ? 'Writing your roasts…' : 'Crunching the numbers…'}</Text>
+            <Text style={s.workingText}>{saving ? 'Saving your file…' : useAi && aiPossible ? 'Writing your roasts…' : 'Crunching the numbers…'}</Text>
           </View>
         ) : (
           <Button label="Start the recap" onPress={onStart} />

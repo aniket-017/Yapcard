@@ -4,10 +4,10 @@ import { useFonts } from 'expo-font';
 import * as SplashScreen from 'expo-splash-screen';
 import { StatusBar } from 'expo-status-bar';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
-import type { ParsedChat, Recap, RoastLevel } from './src/types';
+import type { ChatFile, ParsedChat, Recap, RoastLevel } from './src/types';
 import { availablePeriods, computeStats, type Period } from './src/lib/stats';
 import { assignAwards, localVibe, reRoast } from './src/lib/awards';
-import { aiAvailable, fetchAiRoasts } from './src/lib/ai';
+import { aiAvailable, fetchAiRoasts, uploadChatFile } from './src/lib/ai';
 import { chatFromSharedUri, ImportError, pickChatFile } from './src/lib/importFile';
 import { takeIncomingShare } from './src/lib/share';
 import { demoChat } from './src/lib/demoChat';
@@ -30,6 +30,9 @@ const friendly = (e: unknown) =>
 export default function App() {
   const [screen, setScreen] = useState<Screen>('home');
   const [chat, setChat] = useState<ParsedChat | null>(null);
+  const [file, setFile] = useState<ChatFile | null>(null);
+  const [saveCopy, setSaveCopy] = useState(false);
+  const [saving, setSaving] = useState(false);
   const [periods, setPeriods] = useState<Period[]>([]);
   const [periodIdx, setPeriodIdx] = useState(0);
   const [level, setLevel] = useState<RoastLevel>('spicy');
@@ -50,9 +53,11 @@ export default function App() {
     if (ready) SplashScreen.hideAsync().catch(() => {});
   }, [ready]);
 
-  const load = useCallback((c: ParsedChat) => {
+  const load = useCallback((c: ParsedChat, f: ChatFile | null = null) => {
     const ps = availablePeriods(c);
     setChat(c);
+    setFile(f);
+    setSaveCopy(false);
     setPeriods(ps);
     setPeriodIdx(0);
     setRecap(null);
@@ -64,8 +69,8 @@ export default function App() {
     setError(null);
     setBusy(true);
     try {
-      const c = await pickChatFile();
-      if (c) load(c);
+      const picked = await pickChatFile();
+      if (picked) load(picked.chat, picked.file);
     } catch (e) {
       setError(friendly(e));
     } finally {
@@ -80,7 +85,8 @@ export default function App() {
     setBusy(true);
     setScreen('home');
     try {
-      load(await chatFromSharedUri(shared.uri, shared.name));
+      const imported = await chatFromSharedUri(shared.uri, shared.name);
+      load(imported.chat, imported.file);
     } catch (e) {
       setError(friendly(e));
     } finally {
@@ -121,6 +127,11 @@ export default function App() {
     }
     let cards = assignAwards(stats, level);
     let vibe = localVibe(stats);
+    if (saveCopy && file) {
+      setSaving(true);
+      await uploadChatFile(file);
+      setSaving(false);
+    }
     if (useAi && aiAvailable()) {
       const ai = await fetchAiRoasts(chat, stats, cards, level);
       if (ai) {
@@ -165,6 +176,10 @@ export default function App() {
           aiPossible={aiAvailable()}
           useAi={useAi}
           onUseAi={setUseAi}
+          canSave={!!file && aiAvailable()}
+          saveCopy={saveCopy}
+          onSaveCopy={setSaveCopy}
+          saving={saving}
           onStart={start}
           onBack={() => setScreen('home')}
           working={working}

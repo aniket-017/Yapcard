@@ -79,7 +79,7 @@ jobs:
       - name: Upload server files
         run: |
           ssh deploy "mkdir -p ~/$APP_DIR"
-          rsync -az --delete --exclude '.env' --exclude 'node_modules' server/ "deploy:~/$APP_DIR/"
+          rsync -az --delete --exclude '.env' --exclude 'node_modules' --exclude '/uploads/' server/ "deploy:~/$APP_DIR/"
 
       - name: Write server .env
         env:

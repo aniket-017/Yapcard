@@ -46,7 +46,19 @@ Then set your laptop's Wi-Fi address in the project root `.env` (phone and lapto
 EXPO_PUBLIC_API_URL=http://192.168.x.x:1749
 ```
 
-What is sent: the stats and about 120 sample messages, with names replaced by P1, P2…, and phone numbers, emails and links removed. Names are put back on the phone. The server stores nothing.
+What is sent: the stats and about 120 sample messages, with names replaced by P1, P2…, and phone numbers, emails and links removed. Names are put back on the phone. The roast request is never stored.
+
+## Saved chat files (optional)
+
+The setup screen also has a **Save a copy on our server** switch, off by default. When it is on, the app sends the original export to `POST /api/upload` before the roast call. The server writes it to `server/uploads/<YYYY-MM-DD>/<timestamp>-<random>.zip|txt|json` (set `UPLOAD_DIR` in `server/.env` to use another folder, and `MAX_UPLOAD_MB` to change the 25 MB cap). Folders are owner-only (`700`) and files `600`; nothing in that folder is served over HTTP. The deploy's rsync skips `uploads/`, so deploys don't wipe it.
+
+The privacy policy promises deletion within 30 days. Run this on the VPS at least once a day, or from cron:
+
+```bash
+find ~/Yapcard/uploads -type f -mtime +29 -delete && find ~/Yapcard/uploads -mindepth 1 -type d -empty -delete
+```
+
+`~/Yapcard` is the deploy folder (`APP_DIR` in `ci-cd.yml`).
 
 The server is deployed by `.github/workflows/ci-cd.yml` to the VPS (port 1749, behind https://yapcard.jasdigitaltechnologies.com). It needs the `GEMINI_API_KEY` repo secret to write AI roasts.
 

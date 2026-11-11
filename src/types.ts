@@ -19,6 +19,11 @@ export type ParsedChat = {
   messages: Msg[];
 };
 
+/** The export exactly as picked or shared, kept only so it can be saved on the server if the user opts in. */
+export type ChatFile = { bytes: Uint8Array; name: string };
+
+export type ImportedChat = { chat: ParsedChat; file: ChatFile };
+
 export type MemberStats = {
   name: string;
   messages: number;

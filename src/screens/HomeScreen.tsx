@@ -78,7 +78,7 @@ export function HomeScreen({
         <Text style={s.note}>On Telegram, export the chat as JSON from Telegram Desktop and import result.json.</Text>
       </View>
 
-      <Text style={s.privacy}>Your chat is read on this phone. The file is never uploaded or stored.</Text>
+      <Text style={s.privacy}>Your chat is read on this phone. It's only uploaded if you choose to save a copy.</Text>
 
       <View style={s.links}>
         {LINKS.map(([label, path]) => (

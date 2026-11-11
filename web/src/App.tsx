@@ -89,7 +89,7 @@ export function App() {
             <span className="privacy-icon" aria-hidden="true">🔒</span>
             <div>
               <h2>Your chat stays on your phone</h2>
-              <p>Yapcard reads the export on your device. The file is never uploaded or stored. If you switch on AI roasts, only stats and a short sample are sent, with names, numbers and links removed first. <a href="/privacy">Read the privacy policy</a>.</p>
+              <p>Yapcard reads the export on your device. The file is only uploaded if you choose to save a copy on our server, and saved copies are deleted within 30 days. If you switch on AI roasts, only stats and a short sample are sent, with names, numbers and links removed first. <a href="/privacy">Read the privacy policy</a>.</p>
             </div>
           </div>
         </section>

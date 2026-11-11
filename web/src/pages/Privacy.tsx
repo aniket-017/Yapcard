@@ -17,7 +17,10 @@ export function Privacy() {
       <div className="doc-summary">
         <h2>The short version</h2>
         <ul>
-          <li>Your chat export is read on your phone. We never receive or store the file.</li>
+          <li>
+            Your chat export is read on your phone. We only receive the file if you switch on <b>Save a copy on our server</b>, which is off by
+            default. Saved files are deleted within 30 days.
+          </li>
           <li>There are no accounts, no ads, no analytics and no tracking.</li>
           <li>
             If AI roasts are switched on, a short sample of messages, with names, phone numbers, emails and links removed, is sent to our server
@@ -30,7 +33,7 @@ export function Privacy() {
         <p>
           When you import a WhatsApp or Telegram chat export, or share one to Yapcard, the app reads the file on your device to count messages,
           work out stats and pick a title for each member. The chat, the names in it and your recap are held in the app's memory and are cleared
-          when you close the app. Yapcard does not save your chat.
+          when you close the app. Yapcard does not save your chat unless you choose to save a copy on our server (see section 3).
         </p>
         <p>
           Yapcard only opens the file you pick or share to it. It does not access your contacts, photos, camera, microphone, location or any
@@ -63,10 +66,28 @@ export function Privacy() {
         </p>
       </Section>
 
-      <Section title="3. Technical information">
+      <Section title="3. Saving a copy of your chat (optional)">
         <p>
-          To prevent abuse, our server keeps the IP address of each AI roast request in memory for up to one hour so it can limit how many
-          requests one network makes. It is not written to disk or used for anything else.
+          The setup screen has a <b>Save a copy on our server</b> switch. It is off by default and resets to off for every chat you import. Only
+          if you switch it on, the app uploads the chat export file you picked or shared, exactly as it is, to our server over an encrypted
+          (HTTPS) connection before your recap is made. The demo chat is never uploaded.
+        </p>
+        <p>
+          The file is not anonymised. It contains everything in the export, including the names, phone numbers and messages of everyone in the
+          chat. It is stored on our server under a random name in a folder that only we can access and that is not reachable from the internet. It
+          is not sent to Google or any other third party, not used to train AI, and not combined with any other data.
+        </p>
+        <p>
+          Saved files are deleted within 30 days of upload. To have your copy deleted sooner, email <Mail /> with the date and approximate time you
+          saved it.
+        </p>
+      </Section>
+
+      <Section title="4. Technical information">
+        <p>
+          To prevent abuse, our server keeps the IP address of each AI roast request and each saved chat file in memory for up to one hour so it
+          can limit how many requests one network makes. It is not written to disk, not stored with the saved file, and not used for anything
+          else.
         </p>
         <p>
           Like any website, our hosting provider may keep standard server logs (IP address, time and page requested) for security and
@@ -75,14 +96,14 @@ export function Privacy() {
         <p>The website does not use cookies, analytics or third-party trackers. Fonts are served from our own server.</p>
       </Section>
 
-      <Section title="4. Sharing your cards">
+      <Section title="5. Sharing your cards">
         <p>
           When you share a slide or card, the app makes an image on your phone and opens your phone's share menu. Once you send it to another app,
           such as WhatsApp or Instagram, that app's privacy policy applies. Every image shows the Yapcard name and website.
         </p>
       </Section>
 
-      <Section title="5. What we don't do">
+      <Section title="6. What we don't do">
         <ul>
           <li>We don't sell, rent or trade your data.</li>
           <li>We don't show ads or use advertising IDs.</li>
@@ -92,53 +113,60 @@ export function Privacy() {
         </ul>
       </Section>
 
-      <Section title="6. Other people in your chat">
+      <Section title="7. Other people in your chat">
         <p>
-          A chat export contains messages from everyone in the group. Only import chats you are part of, and think about your friends before you
-          post their cards publicly.
+          A chat export contains messages from everyone in the group. Only import chats you are part of, think about your friends before you post
+          their cards publicly, and only save a copy on our server if you are comfortable sharing their messages with us.
         </p>
       </Section>
 
-      <Section title="7. Children">
+      <Section title="8. Children">
         <p>
           Yapcard is not meant for children under 13, or the minimum age for digital services where you live if that is higher. We do not knowingly
           collect personal information from children. If you think a child has sent us information, contact us and we will delete it.
         </p>
       </Section>
 
-      <Section id="delete" title="8. Keeping and deleting your data">
+      <Section id="delete" title="9. Keeping and deleting your data">
         <p>
-          We don't keep your chat, your recap or any AI roast data, so there is nothing stored with us to delete. To remove everything from your
-          phone, close or uninstall the app, and delete the chat export from your phone's storage if you saved it there.
+          We don't keep your recap or any AI roast data. If you switched on <b>Save a copy on our server</b>, the chat file you uploaded is kept
+          for up to 30 days and then deleted. To have it deleted sooner, email <Mail /> with the date and approximate time you saved it. If you
+          never switched it on, there is nothing stored with us to delete.
+        </p>
+        <p>
+          To remove everything from your phone, close or uninstall the app, and delete the chat export from your phone's storage if you saved it
+          there.
         </p>
         <p>
           If you have a question about data we may hold, such as an email you sent us, write to <Mail /> and we will reply within 30 days.
         </p>
       </Section>
 
-      <Section title="9. Your rights">
+      <Section title="10. Your rights">
         <p>
           Depending on where you live, laws such as India's Digital Personal Data Protection Act, the EU and UK GDPR, or California's CCPA give
-          you the right to ask what personal data we hold about you, and to have it corrected or deleted. Because Yapcard stores no personal data,
-          we usually have nothing to return, but you can always ask at <Mail />.
+          you the right to ask what personal data we hold about you, and to have it corrected or deleted. The only personal data we may hold is a
+          chat file you chose to save, for up to 30 days, or an email you sent us. You can ask about either, or withdraw your consent and have a
+          saved file deleted, at <Mail />.
         </p>
       </Section>
 
-      <Section title="10. Security">
+      <Section title="11. Security">
         <p>
-          All traffic between the app, the website and our server is encrypted with HTTPS. Data that reaches our server is handled in memory only
-          and discarded once the reply is sent.
+          All traffic between the app, the website and our server is encrypted with HTTPS. AI roast requests are handled in memory only and
+          discarded once the reply is sent. Saved chat files are stored under random names in a folder only we can access, are never served over
+          the internet, and are deleted within 30 days.
         </p>
       </Section>
 
-      <Section title="11. Changes to this policy">
+      <Section title="12. Changes to this policy">
         <p>
           If we change how Yapcard handles data, we will update this page and the date at the top. Significant changes will also be announced in
           the app's release notes.
         </p>
       </Section>
 
-      <Section title="12. Contact">
+      <Section title="13. Contact">
         <p>
           {DEVELOPER_NAME}
           <br />

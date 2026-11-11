@@ -2,7 +2,7 @@ import { Platform } from 'react-native';
 import * as DocumentPicker from 'expo-document-picker';
 import { File } from 'expo-file-system';
 import JSZip from 'jszip';
-import type { ParsedChat } from '../types';
+import type { ImportedChat, ParsedChat } from '../types';
 import { parseAny, titleFromFileName } from './parseChat';
 
 export class ImportError extends Error {}
@@ -56,7 +56,7 @@ async function readUri(uri: string): Promise<Uint8Array> {
 }
 
 /** Opens the system file picker. Returns null when the user cancels. */
-export async function pickChatFile(): Promise<ParsedChat | null> {
+export async function pickChatFile(): Promise<ImportedChat | null> {
   const res = await DocumentPicker.getDocumentAsync({
     type: ['text/plain', 'application/zip', 'application/x-zip-compressed', 'application/json', 'application/octet-stream', '*/*'],
     copyToCacheDirectory: true,
@@ -68,11 +68,13 @@ export async function pickChatFile(): Promise<ParsedChat | null> {
     Platform.OS === 'web' && asset.file
       ? new Uint8Array(await asset.file.arrayBuffer())
       : await readUri(asset.uri);
-  return chatFromBytes(bytes, asset.name || 'chat.txt');
+  const name = asset.name || 'chat.txt';
+  return { chat: await chatFromBytes(bytes, name), file: { bytes, name } };
 }
 
 /** Used when WhatsApp's "Export chat" shares a file straight into the app. */
-export async function chatFromSharedUri(uri: string, name?: string | null): Promise<ParsedChat> {
+export async function chatFromSharedUri(uri: string, name?: string | null): Promise<ImportedChat> {
   const bytes = await readUri(uri);
-  return chatFromBytes(bytes, name || uri.split('/').pop() || 'chat.txt');
+  const fileName = name || uri.split('/').pop() || 'chat.txt';
+  return { chat: await chatFromBytes(bytes, fileName), file: { bytes, name: fileName } };
 }

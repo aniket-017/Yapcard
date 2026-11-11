@@ -1,4 +1,4 @@
-import type { GroupStats, GroupVibe, MemberCardData, ParsedChat, RoastLevel } from '../types';
+import type { ChatFile, GroupStats, GroupVibe, MemberCardData, ParsedChat, RoastLevel } from '../types';
 
 /**
  * Address of the roast server (see /server). Defaults to the live server; override it in .env
@@ -8,6 +8,26 @@ import type { GroupStats, GroupVibe, MemberCardData, ParsedChat, RoastLevel } fr
 export const DEFAULT_API_URL = 'https://yapcard.jasdigitaltechnologies.com';
 export const API_URL = (process.env.EXPO_PUBLIC_API_URL || DEFAULT_API_URL).replace(/\/+$/, '');
 export const aiAvailable = () => API_URL.length > 0;
+
+/** Saves the original export on the server. Only called when the user switches on "Save a copy". Never throws. */
+export async function uploadChatFile(file: ChatFile, timeoutMs = 30000): Promise<boolean> {
+  if (!API_URL) return false;
+  const ctrl = new AbortController();
+  const timer = setTimeout(() => ctrl.abort(), timeoutMs);
+  try {
+    const res = await fetch(`${API_URL}/api/upload`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/octet-stream', 'X-File-Name': encodeURIComponent(file.name) },
+      body: new Uint8Array(file.bytes).buffer,
+      signal: ctrl.signal,
+    });
+    return res.ok;
+  } catch {
+    return false;
+  } finally {
+    clearTimeout(timer);
+  }
+}
 
 export type AiPayload = {
   level: RoastLevel;
