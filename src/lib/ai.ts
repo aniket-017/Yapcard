@@ -1,11 +1,12 @@
 import type { GroupStats, GroupVibe, MemberCardData, ParsedChat, RoastLevel } from '../types';
 
 /**
- * Address of your roast server (see /server). Set it in a .env file:
- *   EXPO_PUBLIC_API_URL=https://your-server.example.com
- * When it is empty the app uses its built-in roasts and nothing leaves the phone.
+ * Address of the roast server (see /server). Defaults to the live server; override it in .env
+ * for local testing, e.g. EXPO_PUBLIC_API_URL=http://192.168.1.6:1749
+ * EAS cloud builds don't upload the git-ignored .env, so store builds use the default.
  */
-export const API_URL = (process.env.EXPO_PUBLIC_API_URL || '').replace(/\/+$/, '');
+export const DEFAULT_API_URL = 'https://yapcard.jasdigitaltechnologies.com';
+export const API_URL = (process.env.EXPO_PUBLIC_API_URL || DEFAULT_API_URL).replace(/\/+$/, '');
 export const aiAvailable = () => API_URL.length > 0;
 
 export type AiPayload = {

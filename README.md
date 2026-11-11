@@ -30,7 +30,9 @@ To get a chat file: WhatsApp → open the group → ⋮ → More → **Export ch
 
 ## AI roasts (optional)
 
-Without a server the app uses its built-in roast lines and nothing leaves the phone. To switch on Gemini-written roasts:
+The app talks to the live server at https://yapcard.jasdigitaltechnologies.com (set in `src/lib/ai.ts`), and an **AI-written roasts** switch appears on the setup screen. If the server can't be reached, the app falls back to its built-in roast lines.
+
+To test against a server on your laptop instead:
 
 ```bash
 cd server
@@ -38,17 +40,15 @@ copy .env.example .env      # then put your GEMINI_API_KEY in .env
 npm run dev                 # starts on http://localhost:1749
 ```
 
-Then in the project root create `.env` with your laptop's Wi-Fi address (phone and laptop on the same Wi-Fi):
+Then set your laptop's Wi-Fi address in the project root `.env` (phone and laptop on the same Wi-Fi) and restart `npx expo start`:
 
 ```
 EXPO_PUBLIC_API_URL=http://192.168.x.x:1749
 ```
 
-Restart `npx expo start`. An **AI-written roasts** switch appears on the setup screen.
-
 What is sent: the stats and about 120 sample messages, with names replaced by P1, P2…, and phone numbers, emails and links removed. Names are put back on the phone. The server stores nothing.
 
-To host the server, deploy the `server` folder to any Node 20+ host (Render, Railway, a VPS), set `GEMINI_API_KEY` there, and put its https address in `EXPO_PUBLIC_API_URL` before building the app.
+The server is deployed by `.github/workflows/ci-cd.yml` to the VPS (port 1749, behind https://yapcard.jasdigitaltechnologies.com). It needs the `GEMINI_API_KEY` repo secret to write AI roasts.
 
 ## Landing page
 
@@ -78,7 +78,7 @@ In an installed build (not Expo Go), Yapcard also appears in WhatsApp's share sh
 
 ## Before you publish
 
-- `src/theme.ts`: `SHARE_LINK` is printed on every shared image. Point it at your real site or store link.
+- `src/theme.ts`: `SHARE_LINK` is printed on every shared image. It points at the landing page.
 - `app.json`: change `com.yapcard.app` (Android package and iOS bundle identifier) to an ID you own.
 - Check that the name "Yapcard" is free on the Play Store and App Store.
 

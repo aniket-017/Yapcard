@@ -1,7 +1,7 @@
 export const APP_NAME = 'Yapcard';
 export const APP_TAGLINE = 'Your group chat, wrapped';
-// Shown on every shared card. Change to your real link once the app is live.
-export const SHARE_LINK = 'yapcard.app';
+// Shown on every shared card.
+export const SHARE_LINK = 'yapcard.jasdigitaltechnologies.com';
 
 // Palette: a deep violet stage with sticker-bright colours on top.
 export const colors = {
